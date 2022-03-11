@@ -62,11 +62,9 @@ if __name__ == '__main__':
     db = {'hashtag': [], 'username':[] , 'text':[], }
     loc = "23424977"
     trends = get_trends(api, loc)
-    with open("get_trends.json","w") as fp:
-        fp.write(json.dumps(trends, indent=4))
-        for i in range(0,10,1):
-            if trends[i]['name'] not in c:
-                c.append(trends[i]['name'])
+    for i in range(0,10,1):
+        if trends[i]['name'] not in c:
+            c.append(trends[i]['name'])
     print("top 10 trending hashtags at", loc, ":" ,c)
     date_since = date.today() - timedelta(days = 1)
     for words in c :
