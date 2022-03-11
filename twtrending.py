@@ -32,14 +32,14 @@ def printtweetdata(n, ith_tweet):
     print(f"Tweet Text:{ith_tweet[1]}")
 def scrape(query, date_since, numtweet):
     date_today = date.today()
-    date_yes = date.today() - timedelta(days = 1)
-    query = words + " until:{} since:{}".format(date_today,date_yes)
+    date_yes = date.today() - timedelta(days = 7)
+    query = words 
     tweets = tweepy.Cursor(
         api.search_tweets,
         query,
         lang="en",
         since_id=date_since,
-        result_type='popular',
+        result_type='mixed',
         tweet_mode='extended').items(numtweet)
     list_tweets = [tweet for tweet in tweets]
     i=1
@@ -73,6 +73,7 @@ if __name__ == '__main__':
         numtweet = 10
         db = scrape(words, date_since, numtweet) 
     df = pd.DataFrame.from_dict(db)
+    print(df)
     timestr = date.today().strftime("%Y%m%d")
     fullname = os.path.join("data", timestr+"tweetsfromtrending#s.csv")
     df.to_csv(fullname, index=False, mode="w+", encoding = 'utf-8')
