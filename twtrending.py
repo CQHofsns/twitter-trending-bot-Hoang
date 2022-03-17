@@ -1,14 +1,20 @@
 """
 @author: chuquangnguyenhoang
 """
+#Import lib
+import os
 import tweepy
 import configparser
 import pandas as pd
 from datetime import date
 from datetime import timedelta
 import operator
+from bert1 import bertmodel
+from vader1 import vadermodel
 import os
-# API Keys and Tokens
+
+
+# GET TWITTER'S KEYS, TOKENS AND AUTHORIZATION BY TWEEPY 
 config = configparser.RawConfigParser()
 config.read('key.cfg')
 consumer_key = config.get('API', 'key')
@@ -18,18 +24,20 @@ access_token_secret = config.get('API', 'tokensecret')
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth, wait_on_rate_limit=True)
+
+
+
 # Def
-
-
+# GET TRENDINGS BY LOCATION(WOEID)
 def get_trends(api, loc):
     trends = api.get_place_trends(loc)
     return trends[0]["trends"]
 
-
-def printtweetdata(ith_tweet):
+#
+def printtweetdata(n, ith_tweet):
     print()
-    print(f"Username:{ith_tweet[0]}")
-    print(f"Tweet Text:{ith_tweet[1]}")
+    print(f"Username:{n, ith_tweet[0]}")
+    print(f"Tweet Text:{n, ith_tweet[1]}")
 
 
 def scrape(query, date_since, numtweet):
@@ -39,7 +47,7 @@ def scrape(query, date_since, numtweet):
         query,
         lang="en",
         since_id=date_since,
-        result_type='mixed',
+        result_type='popular',
         tweet_mode='extended').items(numtweet)
     list_tweets = [tweet for tweet in tweets]
     i = 1
@@ -70,6 +78,12 @@ if __name__ == '__main__':
         numtweet = 10
         db = scrape(words, date_since, numtweet)
     df = pd.DataFrame.from_dict(db)
+    l = len(df['text'])
+    r = range(len(df['text']))
     timestr = date.today().strftime("%Y%m%d")
     fullname = os.path.join("data", timestr+"tweetsfromtrending#s.csv")
     df.to_csv(fullname, index=False, mode="w+", encoding='utf-8')
+    """bertmodel(df, timestr, os, l, r)
+    vadermodel(df, r)
+    print (df[['trendings', 'text', 'Bert Result']])
+    df.to_csv('NLP-resulttest1.csv', index=False, mode="w+", encoding = 'utf-8')"""
